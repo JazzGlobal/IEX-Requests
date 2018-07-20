@@ -58,10 +58,8 @@ def sendEmail(email_user,password, email_send, subject,fileNameList):
     msg.attach(MIMEText(body,'plain'))
     
     #Iterates through the fileNameList and attaches each to the email.
-    for file in fileNameList:
-        
+    for file in fileNameList:     
         attachment = open(file,'rb')
-
         part = MIMEBase('application','octet-stream')
         part.set_payload((attachment).read())
         encoders.encode_base64(part)
