@@ -58,7 +58,7 @@ def CreateStyle(fontname, color):
     style.font = font
     return style
 
-#Function to write labels, function to write data.
+#Function to write labels, data, and other information to the spreadsheet.
 def ExportStocks(stockList,filename):
     workbook = copy(xlrd.open_workbook('template.xlsx'))
     s = workbook.get_sheet(0)
@@ -83,6 +83,7 @@ def ExportStocks(stockList,filename):
             for stock in stockList:
                 chart = stock.charts[0]
                 
+                #Temp fix for empty data.
                 try:
                     marketOpen = chart[0]['marketOpen']
                     s.write(i,7,marketOpen,leftStyle)
@@ -104,8 +105,8 @@ def ExportStocks(stockList,filename):
             for stock in stockList:
                 chart = stock.charts[0]
                 lastEntry = len(chart) - 1
-                #marketClose = 0
-                
+
+                #Temp fix for empty data.                
                 try: 
                     marketClose = chart[lastEntry]['marketClose']
                     s.write(i,1,marketClose,leftStyle)
@@ -158,7 +159,6 @@ def ExportStocks(stockList,filename):
         s.write(1,13,xlwt.Formula("-(B2-M2)"),rightStyle)
         s.write(1,14,xlwt.Formula("(N2*P2)-10"),rightStyle)
         s.write(1,15,xlwt.Formula("FLOOR(300/B2,1)"),rightStyle)
-
 
     ArrangeLabels()
     ArrangeValues()
@@ -216,7 +216,6 @@ def AverageStocks(chart):
     averages['averageLow'] = averageLow
     averages['averageChangePercent'] = averageChangePercent
 
-    #Returns 'averages' dictionary object
     return averages
 
 
