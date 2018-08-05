@@ -2,52 +2,27 @@
 #IEX API Terms of Use: https://iextrading.com/api-exhibit-a/
 #Source: https://iextrading.com/developer/docs/#attribution
 #Developer Terms: https://iextrading.com/api-terms/
-import json
 import requests
+import json
 
-prefix = 'https://api.iextrading.com/1.0/'
+#Builds URL from given arguments. 
+def BuildURL(symbol,typeOfUrl,time=''):
+	prefix = 'https://api.iextrading.com/1.0/stock/'
+	
+	url = prefix + symbol + '/' + typeOfUrl + '/' + time
+	response = requests.get(url)
+	if(response.status_code == 404):
+		print('Unknown symbol. Cannot retrieve JSON data.')
+	elif(time != '1d' and time != '1m' and time != '3m' and time != '6m' and time != '1y' and time != '2y' and time != '5y' and time != ''):
+		print('Time value is invalid. Cannot retrieve JSON data.')
+	else:
+		return response.json()
 
-#Builds URL and requests data from the API. Returns JSON. Supports the API's Chart, Book, Earnings, etc.
-#Example: stock = getStock('aapl','chart','1d')
-#symbol: Symbol for stock. 
-#datatype: Determines the format and selection of certain attributes for the data to be returned. Accepted values: 'book' or 'chart'.
-def getStock(symbol, datatype, time=''):
-    print('Running Service: getStock ' + str(symbol) + ' ... ' + str(datatype) + ' ... ' + str(time))
-    url = prefix + str('stock') + str('/') + str(symbol) + str('/') + str(datatype) + str('/') + str(time)
-    
-    if(datatype == 'book' or datatype == 'chart'):
-        try:
-            response = requests.get(url)
-            return response.json()
-        except urllib.error.HTTPError as err:
-            if(err.code == 403 and datatype == 'book' and time != ''):
-                print('Cannot specify \'time\' if \'datatype\' is set to book')
-                print('Leave \'time\' empty.')
-    else:
-        print('\'getStock\' cannot accept ' + '\'' + str(datatype) + '\'' + ' as a parameter')
-        print('Must be of value \'book\' or \'chart\'')
-
-#Builds URL and requests data from the API's Company endpoint
-#Example: getCompanyInformation('aapl')
-#symbol: Symbol for stock.
-def getCompanyInformation(symbol):
-    url = prefix + str('stock') + '/' + str(symbol) + str('/') + str('company')
-    response = requests.get(url)
-    return response.json()
-
-#Builds URL and requests data from the API's Dividend endpoint.
-#Example: getDividendInformation('aapl')
-#symbol: Symbol for stock.
-#time: Range for data. Accepted values: '1m','3m','6m','ytd','1y','2y','5y'. Defaulted to '6m'.
-def getDividendInformation(symbol, time='6m'):
-    url = prefix + str('stock') + '/' + str(symbol) + '/' + str('dividends') + str('/') + str(time)
-    response = requests.get(url)
-    return response.json()
-
-#Builds URL and requests data from the API's 'Earnings' endpoint.
-#Example: getEarningsInformation('aapl')
-#symbol: Symbol for stock.
-def getEarningsInformation(symbol):
-    url = prefix + str('stock') + '/' + str(symbol) + '/' + str('earnings')
-    response = requests.get(url)
-    return response.json()
+def GetStock(symbol, time='1d'):
+	return BuildURL(symbol,'chart',time)
+def GetDividend(symbol,time='1y'):
+	return BuildURL(symbol,'dividends',time)
+def GetEarnings(symbol):
+	return BuildURL(symbol,'earnings')
+def GetCompany(symbol):
+	return BuildURL(symbol,'company')
